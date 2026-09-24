@@ -1,11 +1,14 @@
 import os
+from pathlib import Path
 from app.services.audit_service import FinancialAuditorService
 
 def main():
     auditor = FinancialAuditorService()
     
-    document_name = "old_ticket_test.png"
-    document_test = "./backend/app/tests/{document_name}"
+    document_name = "test_w_cif_img.png"
+    BASE_DIR = Path(__file__).resolve().parent
+    document_test = BASE_DIR / "tests" / "fixtures" / document_name
+    print(f"Ruta absoluta calculada: {document_test}")
 
     if not os.path.exists(document_test):
         print(f"⚠️ Por favor, coloca un documento de prueba con nombre {document_name}")
