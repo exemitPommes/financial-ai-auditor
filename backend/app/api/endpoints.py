@@ -1,8 +1,7 @@
-import io
-from PIL import Image
 from fastapi import APIRouter, UploadFile, File, HTTPException, status
 from app.services.audit_service import FinancialAuditorService
-from app.schemas.schemas import FinancialExtraction, AuditResult
+from app.schemas.schemas import AuditResult
+
 MAXIMO_10_MB = 10 * 1024 * 1024
 
 router = APIRouter()
@@ -10,7 +9,7 @@ auditor = FinancialAuditorService()
 
 @router.post("/audit", response_model=AuditResult)
 async def audit_document_endpoint(file: UploadFile =  File(...)):
-    if file.content_type not in ["image/jpeg", "image/png", "image/webp"]: #dejamos pdf para despues
+    if file.content_type not in ["image/jpeg", "image/png", "image/webp"]:
         raise HTTPException(
         status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         detail=f"Formato '{file.content_type}' no soportado. Usa JPEG, PNG o WebP."
