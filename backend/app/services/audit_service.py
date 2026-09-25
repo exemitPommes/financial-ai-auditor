@@ -1,4 +1,5 @@
 import os
+import io
 import time
 from dotenv import load_dotenv
 from PIL import Image
@@ -48,6 +49,46 @@ class FinancialAuditorService:
     def audit_document(self, image_route: str) -> AuditResult:
         inicio = time.time()
         image = Image.open(image_route)
+
+        systemPrompt = """
+        Eres un auditor contable y fiscal experto. Analiza minuciosamente la imagen de este documento financiero. Para ello sigue los pasos:
+        1 .- Extrae todos los campos requeridos con máxima fidelidad numérica.
+        2 .- Para cada línea/concepto y para el importe total, estima sus coordenadas normalizadas visuales (bounding boxes normalizadas del 0 al 1000).
+        """
+
+        response = self.client.models.generate_content(
+            model=self.model_name,
+            contents=[image, systemPrompt],
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=FinancialExtraction,
+                temperature=0.2
+            ),
+        )
+
+        datos_extraidos: FinancialExtraction = response.parsed
+
+        estado, alertas = self._audit_business_rules(datos_extraidos)
+        tiempo_total_ms = (time.time() - inicio) * 1000
+
+        return AuditResult(
+            datos = datos_extraidos,
+            estado = estado,
+            alertas = alertas,
+            tiempo_procesamiento_ms = round(tiempo_total_ms, 2)
+        )
+
+    @staticmethod
+    def process_bytes_to_image(image_bytes: bytes) -> Image.Image:
+        image_stream = io.BytesIO(image_bytes)
+        processed_image = Image.open(image_stream)
+        processed_image.load()
+        return processed_image
+
+    def audit_document(self, image_bytes_api: bytes) -> AuditResult:
+        inicio = time.time()
+        image = self.process_bytes_to_image(image_bytes_api)
+        
 
         systemPrompt = """
         Eres un auditor contable y fiscal experto. Analiza minuciosamente la imagen de este documento financiero. Para ello sigue los pasos:
