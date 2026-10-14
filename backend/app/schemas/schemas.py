@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional, Literal
 
+MIN_SPACING_SANITIZER = 5
+
 class BoundingBox(BaseModel):
     xmin: int = Field(ge= 0, le=1000, description="Coordinada normalizada eje abscisas izquierda (0-1000)")
     ymin: int = Field(ge= 0, le=1000, description="Coordinada normalizada eje ordenadas superior (0-1000)")
@@ -9,10 +11,25 @@ class BoundingBox(BaseModel):
 
     @model_validator(mode="after")
     def diagonal_validator(self) -> "BoundingBox":
-        if self.xmin >= self.xmax:
-            raise ValueError(f"La coordinada xmin {self.xmin} debe ser menor que xmax {self.xmax}")
-        if self.ymin >= self.ymax:
-            raise ValueError(f"La coordinada ymin {self.ymin} debe ser menor que ymax {self.ymax}")
+        xmin = min(self.xmin, self.xmax)
+        xmax = max(self.xmin, self.xmax)
+        ymin = min(self.ymin, self.ymax)
+        ymax = max(self.ymin, self.ymax)
+
+        if xmin == xmax:
+            if xmax + MIN_SPACING_SANITIZER <= 1000:
+                xmax += MIN_SPACING_SANITIZER
+            else:
+                xmin -= MIN_SPACING_SANITIZER
+            
+        if ymin == ymax:
+            if ymax + MIN_SPACING_SANITIZER <= 1000:
+                ymax += MIN_SPACING_SANITIZER
+            else:
+                ymin -= MIN_SPACING_SANITIZER
+
+        self.xmin, self.xmax = xmin, xmax
+        self.ymin, self.ymax = ymin, ymax
         return self
 
 class DocumentItem(BaseModel):
