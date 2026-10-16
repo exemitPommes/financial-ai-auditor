@@ -55,3 +55,10 @@ class AuditResult(BaseModel):
     estado: Literal['AUTO_APPROVED','FLAGGED_FOR_REVIEW'] = Field(description="'AUTO_APPROVED' o 'FLAGGED_FOR_REVIEW'")
     alertas: List[str] = Field(default_factory=list, description="Descadres o irregularidades detectadas")
     tiempo_procesamiento_ms: float
+
+class PolicyViolation(BaseModel):
+    norma_id: str = Field(description="Código de la norma, ej: POL-2.1")
+    motivo: str = Field(description="Explicación concisa de la infracción")
+
+class ComplianceReport(BaseModel):
+    infracciones: list[PolicyViolation] = Field(default_factory=list)
