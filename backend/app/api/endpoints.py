@@ -1,12 +1,14 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, status
 from app.services.audit_service import FinancialAuditorService
 from app.schemas.schemas import AuditResult
+from app.services.compliance_service import ComplianceService
 
 ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp", "application/pdf"]
 MAXIMO_10_MB = 10 * 1024 * 1024
 
 router = APIRouter()
 auditor = FinancialAuditorService()
+cumplimiento_normativo = ComplianceService()
 
 """ 
 Si es PDF nativo o escaneado, se renderiza a imagen página por página (con librerías estándar como pypdf o pdf2image).
@@ -29,5 +31,11 @@ async def audit_document_endpoint(file: UploadFile =  File(...)):
     )
     
     resultado = auditor.audit_document(document_bytes, file.content_type)
+
+    alertas_cumplimiento_normativo = cumplimiento_normativo.check_compliance(items=resultado.datos.items)
+    resultado.alertas.extend(alertas_cumplimiento_normativo)
+
+    if alertas_cumplimiento_normativo:
+        resultado.estado = "FLAGGED_FOR_REVIEW"
 
     return resultado
