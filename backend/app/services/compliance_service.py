@@ -88,7 +88,7 @@ class ComplianceService:
                 return []
             else:
                 for infraccion in reporte.infracciones:
-                    alertas_politica.append(f"[COMPLIANCE] Infracción de {infraccion.norma_id}: {infraccion.motivo}")
+                    alertas_politica.append(f"[CUMPLIMIENTO NORMATIVO] Infracción de {infraccion.norma_id}: {infraccion.motivo}")
 
         return alertas_politica
 

@@ -1,0 +1,67 @@
+:host {
+  display: block;
+  height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #1a202c;
+  background-color: #f7fafc;
+}
+
+.workspace-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+
+  h1 { font-size: 1.25rem; margin: 0; }
+  .subtitle { font-size: 0.85rem; color: #718096; }
+}
+
+/* .split-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 1;
+  overflow: hidden;
+}
+
+.pane {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.left-pane {
+  border-right: 1px solid #e2e8f0;
+  background: #edf2f7;
+  display: flex;
+  flex-direction: column;
+} */
+
+.document-canvas {
+  position: relative;
+  margin-top: 1rem;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  .doc-image {
+    width: 100%;
+    display: block;
+  }
+}
+
+.alert-box {
+  background: #f5fcff;
+  border-left: 4px solid #2b3e52;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+}
