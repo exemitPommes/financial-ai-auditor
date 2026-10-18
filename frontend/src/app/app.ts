@@ -1,33 +1,104 @@
-import { Component, inject } from '@angular/core';
-import { ButtonComponent, DropzoneComponent } from 'lib-ng-core-components';
+import { Component, computed, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { 
+  ButtonComponent, 
+  DropzoneComponent,
+  BadgeComponent,
+  CardComponent,
+  SkeletonComponent,
+  AlertComponent,
+  SplitterComponent, 
+} from 'lib-ng-core-components';
+
 import { AuditApiService } from './core/services/audit-api.service';
+import { AuditResult } from './core/models/audit.models';
+import { VarianteAuditoria } from './core/models/audit.types';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ButtonComponent, DropzoneComponent],
-  templateUrl: './app.html'
-
+  imports: [
+    CommonModule,
+    AlertComponent,
+    BadgeComponent,
+    ButtonComponent, 
+    CardComponent,
+    DropzoneComponent,
+    SkeletonComponent,
+    SplitterComponent,
+  ],
+  templateUrl: './app.html',
+  styleUrl: './app.scss',
 })
 export class AppComponent {
-  private readonly auditApiCore = inject(AuditApiService);
+  private readonly auditApi = inject(AuditApiService);
 
-  fileTransfered: File | null = null;
+  selectedFile = signal<File | null>(null);
+  previewUrl = signal<string | null>(null);
+  isLoading = signal<boolean>(false);
+  auditResult = signal<AuditResult | null>(null);
+  dropzoneErrorMessage = signal<string | null>(null);
+  auditErrorMessage = signal<string | null>(null);
 
-  public fichero(trasferedFile: File): void {
-    this.fileTransfered = trasferedFile;
-    console.log('Se ha transferido 1 fichero: ', this.fileTransfered);
+  hasFile = computed(() => this.selectedFile() !== null);
+  hasAuditFile = computed(() => this.auditResult() !== null);
+
+  statusVariant = computed<VarianteAuditoria>(() => {
+    const auditoria = this.auditResult();
+    if (!auditoria) {
+      return 'warning';
+    }
+    return auditoria.estado === 'AUTO_APPROVED' ? 'success' : 'danger';
+  });
+
+  // Estado para la interactividad bidireccional (hover en tabla <-> caja en visor)
+  //hoveredItemIndex = signal<number | null>(null);
+
+  public onUploadFile(file: File): void {
+    this.selectedFile.set(file);
+    console.log('Se ha transferido 1 fichero: ', this.selectedFile());
+    this.auditResult.set(null);
+    this.auditErrorMessage.set(null);
+    this.dropzoneErrorMessage.set(null);
+
+    if (file.type.startsWith('image/')) {
+      this.previewUrl.set(URL.createObjectURL(file));
+    } else {
+      this.previewUrl.set(null);
+    }
   }
 
-  public audit(): void {
-    if (!this.fileTransfered) {
+  public onRunAudit(): void {
+    const file = this.selectedFile();
+    if (!file) {
       console.log('dog, we need a file first');
       return;
     } else {
-      this.auditApiCore.auditDocument(this.fileTransfered).subscribe({
-        next: (res) => console.log('Resultado del backend:', res),
-        error: (err) => console.error('Error HTTP:', err),
+      this.isLoading.set(true);
+      this.auditErrorMessage.set(null);
+      this.auditApi.auditDocument(file).subscribe({
+        next: (result) => {
+          this.auditResult.set(result);
+          this.isLoading.set(false);
+        },
+        error: (error) => {
+          console.error('Error al auditar:', error)
+          this.auditErrorMessage.set('Error al conectar con el servidor de auditoría.');
+          this.isLoading.set(false);
+        }
       });
     }
+  }
+
+  onReset(): void {
+    this.selectedFile.set(null);
+    this.previewUrl.set(null);
+    this.auditResult.set(null);
+    this.auditErrorMessage.set(null);
+    this.dropzoneErrorMessage.set(null);
+  }
+  
+  displayError(alerta: string): void {
+    this.dropzoneErrorMessage.set(alerta);
   }
 }
