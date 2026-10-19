@@ -1,14 +1,6 @@
 import { Component, input, output } from '@angular/core';
+import { ButtonComponent } from 'lib-ng-core-components';
 import { BoundingBox, DocumentItem } from 'src/app/core/models/audit.models';
-import { 
-  ButtonComponent, 
-  DropzoneComponent,
-  BadgeComponent,
-  CardComponent,
-  SkeletonComponent,
-  AlertComponent,
-  SplitterComponent, 
-} from 'lib-ng-core-components';
 import { DocumentOverlayComponent } from '../document-overlay/document-overlay.component';
 
 @Component({
@@ -26,7 +18,7 @@ export class DocumentViewerComponent {
     readonly hoveredItemIndex = input<number | null>(null);
     readonly isLoading = input<boolean>(false);
     readonly hasAuditFile = input<boolean>(false);
-    
+
     readonly fileSelected = output<File>();
     readonly reset = output<void>();
     readonly runAudit = output<void>();

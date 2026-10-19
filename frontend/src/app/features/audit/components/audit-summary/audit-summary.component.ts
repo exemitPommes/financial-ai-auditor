@@ -1,8 +1,6 @@
 import { Component, computed, input, output } from '@angular/core';
 import { AuditResult } from 'src/app/core/models/audit.models';
-import { 
-  ButtonComponent,
-  BadgeComponent,
+import {
   CardComponent,
   SkeletonComponent,
   AlertComponent,
