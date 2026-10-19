@@ -1,0 +1,41 @@
+@if (isLoading()) {
+<div class="loading-state">
+    <p>Extrayendo entidades y consultando políticas RAG con Vertex AI...</p>
+    <article vf-card>
+        <div vf-card-header style="display: flex; align-items: center; gap: 1rem;">
+            <vf-skeleton shape="circle"></vf-skeleton>
+            <div style="flex: 1;">
+                <vf-skeleton shape="text" style="width: 60%;"></vf-skeleton>
+                <vf-skeleton shape="text" style="width: 40%;"></vf-skeleton>
+            </div>
+        </div>
+
+        <div style="margin-top: 1rem;">
+            <vf-skeleton shape="rect" style="height: 100px;"></vf-skeleton>
+        </div>
+    </article>
+</div>
+} @else if (hasAuditFile()) {
+<div class="audit-details">
+    @if (auditResult()?.alertas?.length) {
+    <div class="alerts-section">
+        <h3>Discrepancias e Infracciones Detectadas</h3>
+        @for (alerta of auditResult()?.alertas; track $index) {
+        <vf-alert variant="danger" style="margin-top: 1rem;">{{ alerta }}</vf-alert>
+        }
+    </div>
+    }
+
+   <audit-table
+    [items]="auditResult()?.datos?.items ?? []"
+    [hoveredItemIndex]="hoveredItemIndex()"
+    (itemHovered)="itemHovered.emit($event)">
+   </audit-table>
+</div>
+} @else {
+<div class="empty-state">
+    <div class="alert-box">
+        <p>Selecciona o arrastra una factura en el panel izquierdo para comenzar la auditoría.</p>
+    </div>
+</div>
+}

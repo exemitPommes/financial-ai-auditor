@@ -1,0 +1,29 @@
+<div class="document-viewer-container">
+    <div class="viewer-actions">
+        <button vf-button variant="secondary" (click)="reset.emit()" style="margin-right: 1rem;">Cambiar
+            archivo</button>
+        <button vf-button variant="primary" [isLoading]="isLoading()" [isDisabled]="hasAuditFile()"
+            (click)="runAudit.emit()" style="margin-right: 1rem;">
+            {{ isLoading() ? 'Auditando...' : 'Lanzar Auditoría' }}
+        </button>
+    </div>
+
+    <div class="document-canvas">
+        @if (previewUrl()) {
+        <div class="canvas-wrapper">
+            <img [src]="previewUrl()" alt="Documento a auditar" class="doc-image" />
+
+            <document-overlay
+                [items]="items()"
+                [totalBox]="totalBox()"
+                [hoveredIndex]="hoveredItemIndex()"
+                (boxHovered)="itemHovered.emit($event)">
+            </document-overlay>
+        </div>
+        } @else {
+        <div class="pdf-placeholder">
+            <span>Documento PDF cargado: {{ file()?.name }}</span>
+        </div>
+        }
+    </div>
+</div>

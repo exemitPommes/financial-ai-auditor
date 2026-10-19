@@ -1,0 +1,40 @@
+:host {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.overlay-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.box-rect {
+  pointer-events: auto;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.item-variant {
+    fill: rgba(49, 130, 206, 0.15);
+    stroke: #3182ce;
+    stroke-width: 2;
+
+    &:hover,
+    &.is-hovered {
+      fill: rgba(237, 137, 54, 0.35);
+      stroke: #dd6b20;
+      stroke-width: 3;
+    }
+  }
+
+  &.total-variant {
+    fill: rgba(56, 161, 105, 0.15);
+    stroke: #38a169;
+    stroke-width: 2;
+    stroke-dasharray: 4 2;
+  }
+}

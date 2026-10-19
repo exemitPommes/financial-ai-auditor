@@ -13,84 +13,40 @@
     </header>
 
     <vf-splitter ratio="1fr 1fr">
-
       <section vf-split-left style="padding: 1rem;">
         @if (!hasFile()) {
-        <div class="dropzone-wrapper">
-          <vf-dropzone variant="primary" [multiple]="false" [maxFileSizeMb]="10" (fileSelected)="onUploadFile($event)"
+          <vf-dropzone 
+            variant="primary" 
+            [multiple]="false" 
+            [maxFileSizeMb]="10" 
+            (fileSelected)="onUploadFile($event)"
             (errorOccurred)="displayError($event)">
           </vf-dropzone>
-        </div>
         } @else {
-        <div class="document-viewer-container">
-          <div class="viewer-actions">
-            <button vf-button variant="secondary" (click)="onReset()" style="margin-right: 1rem;">Cambiar
-              archivo</button>
-            <button vf-button variant="primary" [isLoading]="isLoading()" [isDisabled]="hasAuditFile()"
-              (click)="onRunAudit()" style="margin-right: 1rem;">
-              {{ isLoading() ? 'Auditando...' : 'Lanzar Auditoría' }}
-            </button>
-          </div>
-
-          <div class="document-canvas">
-            @if (previewUrl()) {
-            <img [src]="previewUrl()" alt="Documento a auditar" class="doc-image" />
-            <!-- Bounding Boxes -->
-            } @else {
-            <div class="pdf-placeholder">
-              <span>Documento PDF cargado: {{ selectedFile()?.name }}</span>
-            </div>
-            }
-          </div>
-        </div>
+          <document-viewer
+            [file]="selectedFile()"
+            [previewUrl]="previewUrl()"
+            [items]="auditResult()?.datos?.items ?? []"
+            [totalBox]="auditResult()?.datos?.importe_total_bounded_box ?? null"
+            [isLoading]="isLoading()"
+            [hasAuditFile]="hasAuditFile()"
+            (reset)="onReset()"
+            (runAudit)="onRunAudit()"
+            [hoveredItemIndex]="hoveredItemIndex()"
+            (itemHovered)="hoveredItemIndex.set($event)">
+          </document-viewer>
         }
       </section>
 
       <section vf-split-right style="padding: 1rem;">
-        @if (isLoading()) {
-        <div class="loading-state">
-          <p>Extrayendo entidades y consultando políticas RAG con Vertex AI...</p>
-          <article vf-card>
-            <div vf-card-header style="display: flex; align-items: center; gap: 1rem;">
-              <vf-skeleton shape="circle"></vf-skeleton>
-              <div style="flex: 1;">
-                <vf-skeleton shape="text" style="width: 60%;"></vf-skeleton>
-                <vf-skeleton shape="text" style="width: 40%;"></vf-skeleton>
-              </div>
-            </div>
-
-            <div style="margin-top: 1rem;">
-              <vf-skeleton shape="rect" style="height: 100px;"></vf-skeleton>
-            </div>
-          </article>
-        </div>
-        } @else if (hasAuditFile()) {
-        <div class="audit-details">
-          @if (auditResult()?.alertas?.length) {
-          <div class="alerts-section">
-            <h3>Discrepancias e Infracciones Detectadas</h3>
-            @for (alerta of auditResult()?.alertas; track $index) {
-              <vf-alert variant="danger" style="margin-top: 1rem;">{{ alerta }}</vf-alert>
-            }
-          </div>
-          }
-
-          <div class="metadata-card">
-            <h3>Datos del Documento</h3>
-            <p><strong>Emisor:</strong> {{ auditResult()?.datos?.empresa_emisora }}</p>
-            <p><strong>Identificador Fiscal:</strong> {{ auditResult()?.datos?.identificador_fiscal || 'N/A' }}</p>
-            <p><strong>Fecha:</strong> {{ auditResult()?.datos?.fecha_emision }}</p>
-            <p><strong>Total:</strong> {{ auditResult()?.datos?.importe_total }} €</p>
-          </div>
-
-        </div>
-        } @else {
-        <div class="empty-state">
-          <div class="alert-box"><p>Selecciona o arrastra una factura en el panel izquierdo para comenzar la auditoría.</p></div>
-        </div>
-        }
+        <audit-summary
+          [auditResult]="auditResult()"
+          [isLoading]="isLoading()"
+          [errorMessage]="auditErrorMessage()"
+          [hoveredItemIndex]="hoveredItemIndex()"
+          (itemHovered)="hoveredItemIndex.set($event)">
+        </audit-summary>
       </section>
-
     </vf-splitter>
   </div>
 </main>
