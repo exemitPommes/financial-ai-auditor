@@ -1,0 +1,29 @@
+@if (items()?.length) {
+  <div class="items-table-container">
+    <h3>Conceptos Extraídos</h3>
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Descripción</th>
+          <th>Cant.</th>
+          <th>Precio U.</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items(); track $index) {
+          <tr 
+            class="item-row"
+            [class.row-highlighted]="hoveredItemIndex() === $index"
+            (mouseenter)="itemHovered.emit($index)"
+            (mouseleave)="itemHovered.emit(null)">
+            <td class="desc-cell">{{ item.description }}</td>
+            <td>{{ item.cantidad ?? 1 }}</td>
+            <td>{{ item.precio_unitario ? (item.precio_unitario + ' €') : '-' }}</td>
+            <td class="total-cell">{{ item.importe_total }} €</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

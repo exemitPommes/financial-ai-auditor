@@ -1,0 +1,13 @@
+.document-canvas {
+  position: relative;
+  margin-top: 1rem;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  .doc-image {
+    width: 100%;
+    display: block;
+  }
+}

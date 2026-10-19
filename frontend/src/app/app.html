@@ -12,7 +12,7 @@
       }
     </header>
 
-    <vf-splitter ratio="1fr 1fr">
+    <!-- <vf-splitter ratio="1fr 1fr">
 
       <section vf-split-left style="padding: 1rem;">
         @if (!hasFile()) {
@@ -35,7 +35,6 @@
           <div class="document-canvas">
             @if (previewUrl()) {
             <img [src]="previewUrl()" alt="Documento a auditar" class="doc-image" />
-            <!-- Bounding Boxes -->
             } @else {
             <div class="pdf-placeholder">
               <span>Documento PDF cargado: {{ selectedFile()?.name }}</span>
@@ -91,6 +90,45 @@
         }
       </section>
 
+    </vf-splitter> -->
+
+
+
+    <vf-splitter ratio="1fr 1fr">
+      <section vf-split-left style="padding: 1rem;">
+        @if (!hasFile()) {
+          <vf-dropzone 
+            variant="primary" 
+            [multiple]="false" 
+            [maxFileSizeMb]="10" 
+            (fileSelected)="onUploadFile($event)"
+            (errorOccurred)="displayError($event)">
+          </vf-dropzone>
+        } @else {
+          <document-viewer
+            [file]="selectedFile()"
+            [previewUrl]="previewUrl()"
+            [items]="auditResult()?.datos?.items ?? []"
+            [totalBox]="auditResult()?.datos?.importe_total_bounded_box ?? null"
+            [isLoading]="isLoading()"
+            [hasAuditFile]="hasAuditFile()"
+            (reset)="onReset()"
+            (runAudit)="onRunAudit()"
+            [hoveredItemIndex]="hoveredItemIndex()"
+            (itemHovered)="hoveredItemIndex.set($event)">
+          </document-viewer>
+        }
+      </section>
+
+      <section vf-split-right style="padding: 1rem;">
+        <audit-summary
+          [auditResult]="auditResult()"
+          [isLoading]="isLoading()"
+          [errorMessage]="auditErrorMessage()"
+          [hoveredItemIndex]="hoveredItemIndex()"
+          (itemHovered)="hoveredItemIndex.set($event)">
+        </audit-summary>
+      </section>
     </vf-splitter>
   </div>
 </main>

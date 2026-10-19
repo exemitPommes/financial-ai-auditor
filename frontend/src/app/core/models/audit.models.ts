@@ -10,7 +10,7 @@ export interface BoundingBox {
 export interface DocumentItem {
     description: string;
     cantidad?: number | null;
-    precio_initario?: number | null;
+    precio_unitario?: number | null;
     importe_total: number;
     bounded_box?: BoundingBox | null;
 }

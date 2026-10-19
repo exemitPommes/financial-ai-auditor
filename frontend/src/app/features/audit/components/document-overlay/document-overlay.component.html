@@ -1,0 +1,29 @@
+<svg class="overlay-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+  @for (item of items(); track $index) {
+    @if (item.bounded_box; as box) {
+      <rect
+        class="box-rect item-variant"
+        [class.is-hovered]="hoveredIndex() === $index"
+        [attr.x]="box.xmin"
+        [attr.y]="box.ymin"
+        [attr.width]="box.xmax - box.xmin"
+        [attr.height]="box.ymax - box.ymin"
+        (mouseenter)="boxHovered.emit($index)"
+        (mouseleave)="boxHovered.emit(null)">
+        <title>{{ item.description }} ({{ item.importe_total }}€)</title>
+      </rect>
+    }
+  }
+
+  @if (totalBox(); as tBox) {
+    <rect
+      class="box-rect total-variant"
+      [attr.x]="tBox.xmin"
+      [attr.y]="tBox.ymin"
+      [attr.width]="tBox.xmax - tBox.xmin"
+      [attr.height]="tBox.ymax - tBox.ymin">
+      <title>Importe Total Auditado</title>
+    </rect>
+  }
+
+</svg>

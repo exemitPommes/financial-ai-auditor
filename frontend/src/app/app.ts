@@ -9,7 +9,8 @@ import {
   AlertComponent,
   SplitterComponent, 
 } from 'lib-ng-core-components';
-
+import { DocumentViewerComponent } from './features/audit/components/document-viewer/document-viewer.component';
+import { AuditSummaryComponent } from './features/audit/components/audit-summary/audit-summary.component';
 import { AuditApiService } from './core/services/audit-api.service';
 import { AuditResult } from './core/models/audit.models';
 import { VarianteAuditoria } from './core/models/audit.types';
@@ -26,6 +27,8 @@ import { VarianteAuditoria } from './core/models/audit.types';
     DropzoneComponent,
     SkeletonComponent,
     SplitterComponent,
+    DocumentViewerComponent,
+    AuditSummaryComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -39,6 +42,7 @@ export class AppComponent {
   auditResult = signal<AuditResult | null>(null);
   dropzoneErrorMessage = signal<string | null>(null);
   auditErrorMessage = signal<string | null>(null);
+  hoveredItemIndex = signal<number | null>(null);
 
   hasFile = computed(() => this.selectedFile() !== null);
   hasAuditFile = computed(() => this.auditResult() !== null);
@@ -50,9 +54,6 @@ export class AppComponent {
     }
     return auditoria.estado === 'AUTO_APPROVED' ? 'success' : 'danger';
   });
-
-  // Estado para la interactividad bidireccional (hover en tabla <-> caja en visor)
-  //hoveredItemIndex = signal<number | null>(null);
 
   public onUploadFile(file: File): void {
     this.selectedFile.set(file);
