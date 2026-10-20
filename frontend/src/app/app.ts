@@ -80,6 +80,9 @@ export class AppComponent {
       this.auditApi.auditDocument(file).subscribe({
         next: (result) => {
           this.auditResult.set(result);
+          if (result.preview_image_base64) {
+            this.previewUrl.set(result.preview_image_base64);
+          }
           this.isLoading.set(false);
         },
         error: (error) => {
