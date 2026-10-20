@@ -32,6 +32,7 @@ export interface AuditResult {
     estado: EstadoAuditoria;
     alertas: string[];
     tiempo_procedamiento_ms: number;
+    preview_image_base64?: string | null;
 }
 
 export interface PolicyViolation {

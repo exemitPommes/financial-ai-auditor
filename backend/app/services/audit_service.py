@@ -2,6 +2,8 @@ import os
 import io
 import time
 import re
+import base64
+import pypdfium2 as pdfium
 from datetime import datetime
 from dotenv import load_dotenv
 from PIL import Image
@@ -29,6 +31,18 @@ class FinancialAuditorService:
             location=os.getenv("GCP_LOCATION", "europe-west1")
         )
         self.model_name = os.getenv("MODEL_NAME", "gemini-3.5-flash")
+
+    @staticmethod
+    def _pdf_to_base64_image(pdf_bytes: bytes) -> str:
+        pdf = pdfium.PdfDocument(pdf_bytes)
+        page = pdf[0]
+        pil_image = page.render(scale=2).to_pil()
+        
+        buffer = io.BytesIO()
+        pil_image.save(buffer, format="JPEG", quality=85)
+        encoded_bytes = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        
+        return f"data:image/jpeg;base64,{encoded_bytes}"
 
     @staticmethod
     def _general_rules(datos: FinancialExtraction, tolerancia: float) -> list[str]:
@@ -157,6 +171,15 @@ class FinancialAuditorService:
 
     def audit_document(self, document_bytes: bytes, mime_type: str) -> AuditResult:
         inicio = time.time()
+        preview_image = None
+        es_multipage = False
+
+        if mime_type == "application/pdf":
+            preview_image = self._pdf_to_base64_image(document_bytes)
+            pdf = pdfium.PdfDocument(document_bytes)
+            if len(pdf) > 1:
+                es_multipage = True
+        
         document_part = types.Part.from_bytes(
             data = document_bytes, 
             mime_type = mime_type
@@ -179,6 +202,8 @@ class FinancialAuditorService:
         )
 
         datos_extraidos: FinancialExtraction = response.parsed
+        if es_multipage:
+            alertas.append("[SISTEMA] Documento multipágina: la inspección visual se limita a la primera página.")
 
         estado, alertas = self._audit_business_rules(datos_extraidos)
         tiempo_total_ms = (time.time() - inicio) * 1000
@@ -187,7 +212,8 @@ class FinancialAuditorService:
             datos = datos_extraidos,
             estado = estado,
             alertas = alertas,
-            tiempo_procesamiento_ms = round(tiempo_total_ms, 2)
+            tiempo_procesamiento_ms = round(tiempo_total_ms, 2),
+            preview_image_base64=preview_image
         )
     
     """ local testing """
