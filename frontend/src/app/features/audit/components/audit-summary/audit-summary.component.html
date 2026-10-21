@@ -31,6 +31,8 @@
     [hoveredItemIndex]="hoveredItemIndex()"
     (itemHovered)="itemHovered.emit($event)">
    </audit-table>
+
+   <audit-decision [auditResult]="auditResult()!"></audit-decision>
 </div>
 } @else {
 <div class="empty-state">

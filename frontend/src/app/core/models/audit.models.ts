@@ -1,4 +1,4 @@
-import { EstadoAuditoria } from './audit.types';
+import { DecisionHumana, EstadoAuditoria } from './audit.types';
 
 export interface BoundingBox {
     xmin: number;
@@ -42,4 +42,17 @@ export interface PolicyViolation {
 
 export interface ComplianceReport {
     infracciones: PolicyViolation[]
+}
+
+
+export interface AuditorDecisionRequest {
+  decision: DecisionHumana;
+  comentario?: string | null;
+  auditoria: AuditResult;
+}
+
+export interface AuditorDecisionResponse {
+  id_registro: number;
+  mensaje: string;
+  fecha_registro: string;
 }

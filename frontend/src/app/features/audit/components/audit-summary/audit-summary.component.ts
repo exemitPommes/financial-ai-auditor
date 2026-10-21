@@ -6,13 +6,14 @@ import {
   AlertComponent,
 } from 'lib-ng-core-components';
 import { AuditTableComponent } from '../audit-table/audit-table.component';
+import { AuditDecisionComponent } from '../audit-decision/audit-decision.component';
 
 @Component({
     selector: 'audit-summary',
     standalone: true,
     templateUrl: './audit-summary.component.html',
     styleUrl: './audit-summary.component.scss',
-    imports: [AlertComponent, CardComponent, SkeletonComponent, AuditTableComponent]
+    imports: [AlertComponent, CardComponent, SkeletonComponent, AuditTableComponent, AuditDecisionComponent]
 
 })
 export class AuditSummaryComponent {

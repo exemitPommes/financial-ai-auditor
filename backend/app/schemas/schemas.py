@@ -63,3 +63,13 @@ class PolicyViolation(BaseModel):
 
 class ComplianceReport(BaseModel):
     infracciones: list[PolicyViolation] = Field(default_factory=list)
+
+class AuditorDecisionRequest(BaseModel):
+    decision: Literal['APROBADO', 'RECHAZADO', 'APROBADO_CON_EXCEPCION']
+    comentario: Optional[str] = None
+    auditoria: AuditResult
+
+class AuditorDecisionResponse(BaseModel):
+    id_registro: int
+    mensaje: str
+    fecha_registro: str
