@@ -166,7 +166,7 @@ class FinancialAuditorService:
         alertas.extend(self._taxes_rules(datos))
         alertas.extend(self._acceptance_threshold_rules(datos))
 
-        estado = "AUTO_APPROVED" if len(alertas) == 0 else "FLAGGED_FOR_REVIEW" #falta actualizar el estado abajo si hay cambios del RAG
+        estado = "AUTO_APPROVED" if len(alertas) == 0 else "FLAGGED_FOR_REVIEW"
         return estado, alertas
 
     def audit_document(self, document_bytes: bytes, mime_type: str) -> AuditResult:
@@ -215,37 +215,4 @@ class FinancialAuditorService:
             alertas = alertas,
             tiempo_procesamiento_ms = round(tiempo_total_ms, 2),
             preview_image_base64=preview_image
-        )
-    
-    """ local testing """
-    def audit_document_local(self, image_route: str) -> AuditResult:
-        inicio = time.time()
-        image = Image.open(image_route)
-
-        systemPrompt = """
-        Eres un auditor contable y fiscal experto. Analiza minuciosamente la imagen de este documento financiero. Para ello sigue los pasos:
-        1 .- Extrae todos los campos requeridos con máxima fidelidad numérica.
-        2 .- Para cada línea/concepto y para el importe total, estima sus coordenadas normalizadas visuales (bounding boxes normalizadas del 0 al 1000).
-        """
-
-        response = self.client.models.generate_content(
-            model=self.model_name,
-            contents=[image, systemPrompt],
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                response_schema=FinancialExtraction,
-                temperature=0.2
-            ),
-        )
-
-        datos_extraidos: FinancialExtraction = response.parsed
-
-        estado, alertas = self._audit_business_rules(datos_extraidos)
-        tiempo_total_ms = (time.time() - inicio) * 1000
-
-        return AuditResult(
-            datos = datos_extraidos,
-            estado = estado,
-            alertas = alertas,
-            tiempo_procesamiento_ms = round(tiempo_total_ms, 2)
         )
