@@ -166,7 +166,7 @@ class FinancialAuditorService:
         alertas.extend(self._taxes_rules(datos))
         alertas.extend(self._acceptance_threshold_rules(datos))
 
-        estado = "AUTO_APPROVED" if len(alertas) == 0 else "FLAGGED_FOR_REVIEW"
+        estado = "AUTO_APPROVED" if len(alertas) == 0 else "FLAGGED_FOR_REVIEW" #falta actualizar el estado abajo si hay cambios del RAG
         return estado, alertas
 
     def audit_document(self, document_bytes: bytes, mime_type: str) -> AuditResult:
@@ -202,10 +202,11 @@ class FinancialAuditorService:
         )
 
         datos_extraidos: FinancialExtraction = response.parsed
-        if es_multipage:
-            alertas.append("[SISTEMA] Documento multipágina: la inspección visual se limita a la primera página.")
 
         estado, alertas = self._audit_business_rules(datos_extraidos)
+        if es_multipage:
+            alertas.append("[SISTEMA] Documento multipágina: la inspección visual se limita a la primera página.")
+            estado = "FLAGGED_FOR_REVIEW"
         tiempo_total_ms = (time.time() - inicio) * 1000
 
         return AuditResult(

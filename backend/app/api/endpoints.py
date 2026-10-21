@@ -1,11 +1,14 @@
+from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, HTTPException, status
+from app.core.database import init_db, registrar_decision
+from app.schemas.schemas import AuditResult, AuditorDecisionRequest, AuditorDecisionResponse
 from app.services.audit_service import FinancialAuditorService
-from app.schemas.schemas import AuditResult
 from app.services.compliance_service import ComplianceService
 
 ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp", "application/pdf"]
 MAXIMO_10_MB = 10 * 1024 * 1024
 
+init_db()
 router = APIRouter()
 auditor = FinancialAuditorService()
 cumplimiento_normativo = ComplianceService()
@@ -39,3 +42,23 @@ async def audit_document_endpoint(file: UploadFile =  File(...)):
         resultado.estado = "FLAGGED_FOR_REVIEW"
 
     return resultado
+
+@router.post("/decision", response_model=AuditorDecisionResponse)
+async def registrar_decision_auditor(payload: AuditorDecisionRequest):
+    datos = payload.auditoria.datos
+    
+    nuevo_id = registrar_decision(
+        dictamen_ia=payload.auditoria.estado,
+        decision_humana=payload.decision,
+        comentario=payload.comentario,
+        datos_completos_json=payload.auditoria.model_dump_json(),
+        empresa=datos.empresa_emisora,
+        cif=datos.identificador_fiscal,
+        total=datos.importe_total
+    )
+
+    return AuditorDecisionResponse(
+        id_registro=nuevo_id,
+        mensaje=f"Decisión '{payload.decision}' registrada con éxito en el libro contable.",
+        fecha_registro=datetime.now().isoformat()
+    )
