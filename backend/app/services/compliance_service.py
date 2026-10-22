@@ -47,9 +47,10 @@ class ComplianceService:
 
     def check_compliance(self, items: list[DocumentItem]) -> list[str]:
         alertas_politica = []
-        descripcion_items: str = ", ".join(item.description for item in items)
+        #descripcion_items: str = ", ".join(item.description for item in items)
+        descripcion_items: str = ", ".join(f"{item.description} ({item.importe_total:.2f}€)" for item in items)
         
-        posibles_infracciones = self.search_applicable_policies(descripcion_items, n_results=2)
+        posibles_infracciones = self.search_applicable_policies(descripcion_items, n_results=3)
         numero_coincidencias = len(posibles_infracciones['ids'])
         if numero_coincidencias == 0:
             return []
