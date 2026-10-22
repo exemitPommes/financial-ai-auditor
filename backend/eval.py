@@ -16,7 +16,6 @@ def run_benchmark():
     with open(GROUND_TRUTH_PATH, "r", encoding="utf-8") as f:
         ground_truth = json.load(f)
 
-    print("🚀 Inicializando Auditor Multimodal y Compliance RAG...")
     auditor = FinancialAuditorService()
     compliance = ComplianceService()
 
@@ -35,13 +34,12 @@ def run_benchmark():
         case_id = item["case_id"]
         base_name = Path(item["file_name"]).stem
         
-        # Buscamos si existe en .png o en .pdf
         file_path = FIXTURES_DIR / f"{base_name}.png"
         if not file_path.exists():
             file_path = FIXTURES_DIR / f"{base_name}.pdf"
 
         if not file_path.exists():
-            print(f"⚠️ {case_id:<6} | {item['file_name']:<32} | NO ENCONTRADO EN tests/fixtures/")
+            print(f"{case_id:<6} | {item['file_name']:<32} | NO ENCONTRADO EN tests/fixtures/")
             continue
 
         mime_type = "application/pdf" if file_path.suffix == ".pdf" else "image/png"
@@ -63,16 +61,13 @@ def run_benchmark():
         elapsed = (time.time() - t0) * 1000
         latencies.append(elapsed)
 
-        # Evaluación de Estado (Accuracy de Decisión)
         status_ok = resultado.estado == item["expected_status"]
         if status_ok:
             correct_status += 1
 
-        # Detección de Falsos Positivos
         if item["expected_status"] == "AUTO_APPROVED" and resultado.estado != "AUTO_APPROVED":
             false_positives += 1
 
-        # Evaluación de RAG (si el caso requería normas específicas)
         expected_rag = item["expected_rag_rules"]
         rag_ok = True
         if expected_rag:
@@ -84,12 +79,11 @@ def run_benchmark():
                 else:
                     rag_ok = False
         else:
-            # Si no debía saltar RAG, verificamos que no salte ninguna falsa alarma de compliance
             if any("[CUMPLIMIENTO NORMATIV]" in alerta for alerta in resultado.alertas):
                 rag_ok = False
 
-        status_icon = "✅" if status_ok else "❌"
-        rag_icon = "✅" if rag_ok else "❌"
+        status_icon = "☑" if status_ok else "✖︎"
+        rag_icon = "☑" if rag_ok else "✖︎"
 
         print(f"{case_id:<6} | {file_path.name[:30]:<32} | {item['expected_status'][:10]:<12} | {resultado.estado[:10]:<12} | {rag_icon:<8} | {status_icon:<5} | {elapsed:.0f} ms")
 
@@ -99,7 +93,7 @@ def run_benchmark():
     rag_recall = (correct_rag_evals / total_rag_expected) * 100 if total_rag_expected else 100.0
 
     print("\n" + "=" * 95)
-    print("📊 INFORME DE BENCHMARK Y EVALUACIÓN EXPERIMENTAL (GOLDEN DATASET)")
+    print("BENCHMARK Y EVALUACIÓN EXPERIMENTAL DE LA PILA DE TESTS")
     print("=" * 95)
     print(f"Total Casos Evaluados:                 {total_cases}")
     print(f"Exactitud de Decisión (Accuracy):      {accuracy:.1f}% ({correct_status}/{total_cases})")
