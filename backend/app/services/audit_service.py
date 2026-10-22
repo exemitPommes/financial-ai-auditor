@@ -21,7 +21,7 @@ TIPOS_IVA_VALIDOS = {
     4.0:  "Superreducido (4%)",
     0.0:  "Exento (0%)"
 }
-TIPOS_DOCUMENTO_SIMPLIFICADO = {'Ticket', 'Recibo'}
+TIPOS_DOCUMENTO_SIMPLIFICADO = {'ticket', 'recibo', 'simplificada'}
 
 class FinancialAuditorService:
     def __init__(self):
@@ -147,8 +147,10 @@ class FinancialAuditorService:
     @staticmethod
     def _acceptance_threshold_rules(datos: FinancialExtraction) -> list[str]:
         alertas_acceptance = []
-        documento_valido = datos.tipo_documento in TIPOS_DOCUMENTO_SIMPLIFICADO or datos.tipo_documento is None
-        if documento_valido and datos.importe_total > 400.0:
+        tipo = (datos.tipo_documento or "").lower()
+        es_simplificada = any(t in tipo for t in TIPOS_DOCUMENTO_SIMPLIFICADO) or not tipo
+
+        if es_simplificada and datos.importe_total > 400.0:
             alertas_acceptance.append(
                 f"[REGULATORIO] Factura simplificada excede el límite legal de 400.00€ "
                 f"(Total: {datos.importe_total:.2f}€). Requiere factura ordinaria con datos del receptor."
