@@ -24,4 +24,12 @@ export class DocumentViewerComponent {
     readonly runAudit = output<void>();
     readonly itemHovered = output<number | null>();
 
+    protected formatFileSize(bytes?: number): string {
+        if (!bytes) {
+            return '0 KB';
+        }
+        const kb = bytes / 1024;
+        return kb > 1024 ? `${(kb / 1024).toFixed(1)} MB` : `${kb.toFixed(1)} KB`;
+    }
+
 }

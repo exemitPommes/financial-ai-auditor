@@ -1,55 +1,27 @@
-<main class="main">
-  <div class="workspace-container">
+<auditor-header [hasAuditFile]="hasAuditFile()" [auditState]="auditResult()?.estado" [statusVariant]="statusVariant()"
+  [finalDecision]="finalDecision()"></auditor-header>
 
-    <header class="app-header">
-      <div class="brand">
-        <h1>Financial AI Auditor</h1>
-        <span class="subtitle">Auditoría fiscal y cumplimiento normativo RAG</span>
-      </div>
+<vf-splitter ratio="1fr 1fr">
+  <section vf-split-left class="pane-left-wrapper" style="padding: 1rem;">
+    @if (!hasFile()) {
+    <div class="dropzone-center-box">
+      <vf-dropzone variant="primary" [multiple]="false" [maxFileSizeMb]="10" (fileSelected)="onUploadFile($event)"
+        (errorOccurred)="displayError($event)">
+      </vf-dropzone>
+    </div>
+    } @else {
+    <document-viewer [file]="selectedFile()" [previewUrl]="previewUrl()" [items]="auditResult()?.datos?.items ?? []"
+      [totalBox]="auditResult()?.datos?.importe_total_bounded_box ?? null" [isLoading]="isLoading()"
+      [hasAuditFile]="hasAuditFile()" (reset)="onReset()" (runAudit)="onRunAudit()"
+      [hoveredItemIndex]="hoveredItemIndex()" (itemHovered)="hoveredItemIndex.set($event)">
+    </document-viewer>
+    }
+  </section>
 
-      @if (hasAuditFile()) {
-      <vf-badge [variant]="statusVariant()">{{ auditResult()?.estado }}</vf-badge>
-      }
-    </header>
-
-    <vf-splitter ratio="1fr 1fr">
-      <section vf-split-left style="padding: 1rem;">
-        @if (!hasFile()) {
-          <vf-dropzone 
-            variant="primary" 
-            [multiple]="false" 
-            [maxFileSizeMb]="10" 
-            (fileSelected)="onUploadFile($event)"
-            (errorOccurred)="displayError($event)">
-          </vf-dropzone>
-        } @else {
-          <document-viewer
-            [file]="selectedFile()"
-            [previewUrl]="previewUrl()"
-            [items]="auditResult()?.datos?.items ?? []"
-            [totalBox]="auditResult()?.datos?.importe_total_bounded_box ?? null"
-            [isLoading]="isLoading()"
-            [hasAuditFile]="hasAuditFile()"
-            (reset)="onReset()"
-            (runAudit)="onRunAudit()"
-            [hoveredItemIndex]="hoveredItemIndex()"
-            (itemHovered)="hoveredItemIndex.set($event)">
-          </document-viewer>
-        }
-      </section>
-
-      <section vf-split-right style="padding: 1rem;">
-        <audit-summary
-          [auditResult]="auditResult()"
-          [isLoading]="isLoading()"
-          [errorMessage]="auditErrorMessage()"
-          [hoveredItemIndex]="hoveredItemIndex()"
-          (itemHovered)="hoveredItemIndex.set($event)">
-        </audit-summary>
-      </section>
-    </vf-splitter>
-  </div>
-</main>
-
-
-<!-- <router-outlet /> -->
+  <section vf-split-right style="padding: 1rem;">
+    <audit-summary [auditResult]="auditResult()" [isLoading]="isLoading()" [errorMessage]="auditErrorMessage()"
+      [hoveredItemIndex]="hoveredItemIndex()" (itemHovered)="hoveredItemIndex.set($event)"
+      (decisionSubmitted)="finalDecision.set($event)">
+    </audit-summary>
+  </section>
+</vf-splitter>

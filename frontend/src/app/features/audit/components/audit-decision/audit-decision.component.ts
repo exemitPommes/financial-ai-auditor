@@ -1,7 +1,7 @@
-import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonComponent, CardComponent, AlertComponent } from 'lib-ng-core-components';
+import { ButtonComponent } from 'lib-ng-core-components';
 import { AuditResult, AuditorDecisionResponse } from '../../../../core/models/audit.models';
 import { DecisionHumana } from '../../../../core/models/audit.types';
 import { AuditApiService } from '../../../../core/services/audit-api.service';
@@ -9,7 +9,7 @@ import { AuditApiService } from '../../../../core/services/audit-api.service';
 @Component({
     selector: 'audit-decision',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonComponent, CardComponent, AlertComponent],
+    imports: [CommonModule, FormsModule, ButtonComponent],
     templateUrl: './audit-decision.component.html',
     styleUrl: './audit-decision.component.scss',
 })
@@ -18,7 +18,7 @@ export class AuditDecisionComponent {
 
     readonly auditResult = input.required<AuditResult>();
 
-    readonly decisionSubmitted = output<AuditorDecisionResponse>();
+    readonly decisionSubmitted = output<DecisionHumana>();
 
     isSubmitting = signal<boolean>(false);
     selectedAction = signal<DecisionHumana | null>(null);
@@ -59,7 +59,7 @@ export class AuditDecisionComponent {
             next: (res) => {
                 this.isSubmitting.set(false);
                 this.successResponse.set(res);
-                this.decisionSubmitted.emit(res);
+                this.decisionSubmitted.emit(decision);
             },
             error: (err) => {
                 console.error('Error al guardar decisión:', err);
