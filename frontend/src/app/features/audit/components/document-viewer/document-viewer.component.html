@@ -4,7 +4,7 @@
             archivo</button>
         <button vf-button variant="primary" [isLoading]="isLoading()" [isDisabled]="hasAuditFile()"
             (click)="runAudit.emit()" style="margin-right: 1rem;">
-            {{ isLoading() ? 'Auditando...' : 'Lanzar Auditoría' }}
+            {{ isLoading() ? 'Auditando...' : 'Auditar Documento' }}
         </button>
     </div>
 
@@ -13,16 +13,40 @@
         <div class="canvas-wrapper">
             <img [src]="previewUrl()" alt="Documento a auditar" class="doc-image" />
 
-            <document-overlay
-                [items]="items()"
-                [totalBox]="totalBox()"
-                [hoveredIndex]="hoveredItemIndex()"
+            <document-overlay [items]="items()" [totalBox]="totalBox()" [hoveredIndex]="hoveredItemIndex()"
                 (boxHovered)="itemHovered.emit($event)">
             </document-overlay>
         </div>
         } @else {
-        <div class="pdf-placeholder">
-            <span>Documento PDF cargado: {{ file()?.name }}</span>
+        <div class="pdf-staging-container">
+            <div class="pdf-card" [class.is-loading]="isLoading()">
+
+                <div class="pdf-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    <span class="file-type-pill">PDF</span>
+                </div>
+
+                <div class="pdf-details">
+                    <span class="pdf-name">{{ file()?.name }}</span>
+                    <span class="pdf-size">{{ formatFileSize(file()?.size) }} • Documento vectorial</span>
+                </div>
+
+                @if (isLoading()) {
+                <div class="scanning-status">
+                    <div class="scan-bar"></div>
+                    <span>Rasterizando página 1 y ejecutando visión en Vertex AI...</span>
+                </div>
+                } @else {
+                <p class="pdf-ready-hint">
+                    Documento preparado. Pulse <strong>"Auditar Documento"</strong> para iniciar la extracción
+                    multimodal.
+                </p>
+                }
+            </div>
         </div>
         }
     </div>

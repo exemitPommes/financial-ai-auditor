@@ -1,0 +1,77 @@
+.empty-state-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  height: auto;
+
+  .guide-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .guide-subtitle {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+  }
+
+  .specs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 1rem;
+  }
+
+  .spec-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .spec-icon-box {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #334155;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .spec-text {
+    .spec-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e293b;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    
+    p {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin: 0;
+        line-height: 1.4;
+        margin-bottom: 2.25rem;
+    }
+  }
+}

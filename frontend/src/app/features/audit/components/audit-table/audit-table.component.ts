@@ -6,10 +6,10 @@ import { DocumentItem } from 'src/app/core/models/audit.models';
     standalone: true,
     templateUrl: './audit-table.component.html',
     styleUrl: './audit-table.component.scss',
-
 })
 export class AuditTableComponent {
     readonly items = input<DocumentItem[] | null>(null);
+    readonly total = input<number | null>(null);
     readonly hoveredItemIndex = input<number | null>(null);
 
     readonly itemHovered = output<number | null>();

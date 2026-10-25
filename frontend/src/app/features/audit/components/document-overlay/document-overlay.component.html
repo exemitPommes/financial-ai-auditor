@@ -18,10 +18,13 @@
   @if (totalBox(); as tBox) {
     <rect
       class="box-rect total-variant"
+      [class.is-hovered]="hoveredIndex() === -1"
       [attr.x]="tBox.xmin"
       [attr.y]="tBox.ymin"
       [attr.width]="tBox.xmax - tBox.xmin"
-      [attr.height]="tBox.ymax - tBox.ymin">
+      [attr.height]="tBox.ymax - tBox.ymin"
+      (mouseenter)="boxHovered.emit(-1)"
+      (mouseleave)="boxHovered.emit(null)">
       <title>Importe Total Auditado</title>
     </rect>
   }

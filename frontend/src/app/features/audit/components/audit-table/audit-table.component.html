@@ -23,6 +23,15 @@
             <td class="total-cell">{{ item.importe_total }} €</td>
           </tr>
         }
+        <tr class="item-row"
+        [class.row-highlighted]="hoveredItemIndex() === -1"
+            (mouseenter)="itemHovered.emit(-1)"
+            (mouseleave)="itemHovered.emit(null)">
+            <td class="desc-cell">Importe total</td>
+            <td></td>
+            <td></td>
+            <td class="total-cell">{{ total() }} €</td>
+        </tr>
       </tbody>
     </table>
   </div>

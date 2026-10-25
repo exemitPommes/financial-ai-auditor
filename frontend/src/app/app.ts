@@ -1,34 +1,26 @@
-import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { 
-  ButtonComponent, 
+import { Component, computed, inject, signal } from '@angular/core';
+import {
   DropzoneComponent,
-  BadgeComponent,
-  CardComponent,
-  SkeletonComponent,
-  AlertComponent,
-  SplitterComponent, 
+  SplitterComponent
 } from 'lib-ng-core-components';
-import { DocumentViewerComponent } from './features/audit/components/document-viewer/document-viewer.component';
-import { AuditSummaryComponent } from './features/audit/components/audit-summary/audit-summary.component';
-import { AuditApiService } from './core/services/audit-api.service';
 import { AuditResult } from './core/models/audit.models';
-import { VarianteAuditoria } from './core/models/audit.types';
+import { DecisionHumana, VarianteAuditoria } from './core/models/audit.types';
+import { AuditApiService } from './core/services/audit-api.service';
+import { AuditSummaryComponent } from './features/audit/components/audit-summary/audit-summary.component';
+import { DocumentViewerComponent } from './features/audit/components/document-viewer/document-viewer.component';
+import { HeaderComponent } from './features/audit/components/header/header.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     CommonModule,
-    AlertComponent,
-    BadgeComponent,
-    ButtonComponent, 
-    CardComponent,
     DropzoneComponent,
-    SkeletonComponent,
     SplitterComponent,
     DocumentViewerComponent,
-    AuditSummaryComponent
+    AuditSummaryComponent,
+    HeaderComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -43,6 +35,7 @@ export class AppComponent {
   dropzoneErrorMessage = signal<string | null>(null);
   auditErrorMessage = signal<string | null>(null);
   hoveredItemIndex = signal<number | null>(null);
+  finalDecision = signal<DecisionHumana | null>(null);
 
   hasFile = computed(() => this.selectedFile() !== null);
   hasAuditFile = computed(() => this.auditResult() !== null);
@@ -71,8 +64,7 @@ export class AppComponent {
 
   public onRunAudit(): void {
     const file = this.selectedFile();
-    if (!file) {
-      console.log('dog, we need a file first');
+    if (!file) {
       return;
     } else {
       this.isLoading.set(true);
@@ -94,15 +86,20 @@ export class AppComponent {
     }
   }
 
-  onReset(): void {
+  public displayError(alerta: string): void {
+    this.dropzoneErrorMessage.set(alerta);
+  }
+
+  public onDecisionRecorded(decision: DecisionHumana): void {
+    this.finalDecision.set(decision);
+  }
+
+  public onReset(): void {
     this.selectedFile.set(null);
     this.previewUrl.set(null);
     this.auditResult.set(null);
     this.auditErrorMessage.set(null);
     this.dropzoneErrorMessage.set(null);
-  }
-  
-  displayError(alerta: string): void {
-    this.dropzoneErrorMessage.set(alerta);
+    this.finalDecision.set(null);
   }
 }

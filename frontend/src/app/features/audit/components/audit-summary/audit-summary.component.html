@@ -1,20 +1,38 @@
 @if (isLoading()) {
-<div class="loading-state">
-    <p>Extrayendo entidades y consultando políticas RAG con Vertex AI...</p>
-    <article vf-card>
-        <div vf-card-header style="display: flex; align-items: center; gap: 1rem;">
-            <vf-skeleton shape="circle"></vf-skeleton>
-            <div style="flex: 1;">
-                <vf-skeleton shape="text" style="width: 60%;"></vf-skeleton>
-                <vf-skeleton shape="text" style="width: 40%;"></vf-skeleton>
-            </div>
-        </div>
+<article vf-card class="loading-pipeline-card">
 
-        <div style="margin-top: 1rem;">
-            <vf-skeleton shape="rect" style="height: 100px;"></vf-skeleton>
+    <div class="pipeline-header">
+        <div class="pulse-indicator">
+            <div class="pulse-dot"></div>
         </div>
-    </article>
-</div>
+        <div>
+            <h4>Procesando Documento Financiero</h4>
+            <span class="pipeline-sub">Ejecutando pipeline de validación híbrida...</span>
+        </div>
+    </div>
+
+    <div class="pipeline-steps">
+        <div class="step-item active">
+            <span class="step-badge">1</span>
+            <span>Extracción Multimodal y Visión</span>
+        </div>
+        <div class="step-item active">
+            <span class="step-badge">2</span>
+            <span>Auditoría Aritmética y Fiscal</span>
+        </div>
+        <div class="step-item active">
+            <span class="step-badge">3</span>
+            <span>Cotejo de Políticas Internas (RAG)</span>
+        </div>
+    </div>
+
+    <div class="table-skeleton-preview">
+        <div class="skeleton-row header-row"></div>
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+    </div>
+</article>
 } @else if (hasAuditFile()) {
 <div class="audit-details">
     @if (auditResult()?.alertas?.length) {
@@ -26,18 +44,13 @@
     </div>
     }
 
-   <audit-table
-    [items]="auditResult()?.datos?.items ?? []"
-    [hoveredItemIndex]="hoveredItemIndex()"
-    (itemHovered)="itemHovered.emit($event)">
-   </audit-table>
+    <audit-table [items]="auditResult()?.datos?.items ?? []" [total]="auditResult()?.datos?.importe_total ?? 0"
+        [hoveredItemIndex]="hoveredItemIndex()" (itemHovered)="itemHovered.emit($event)">
+    </audit-table>
 
-   <audit-decision [auditResult]="auditResult()!"></audit-decision>
+    <audit-decision [auditResult]="auditResult()!"
+        (decisionSubmitted)="decisionSubmitted.emit($event)"></audit-decision>
 </div>
 } @else {
-<div class="empty-state">
-    <div class="alert-box">
-        <p>Selecciona o arrastra una factura en el panel izquierdo para comenzar la auditoría.</p>
-    </div>
-</div>
+<audit-introduction></audit-introduction>
 }

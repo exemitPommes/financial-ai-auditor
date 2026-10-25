@@ -1,65 +1,65 @@
-<article vf-card class="decision-card">
-  <div class="decision-header">
-    <h3>Dictamen y Cierre del Auditor</h3>
-  </div>
-
+<article vf-card class="decision-card" [class.is-auto-approved]="isAutoApproved() || successResponse()" [class.is-flagged]="!isAutoApproved()">
   @if (successResponse(); as success) {
-    <vf-alert variant="success" style="margin-top: 0.5rem;">
-      {{ success.mensaje }} (Ref. Contable #{{ success.id_registro }})
-    </vf-alert>
+    <div class="success-banner">
+      <div class="success-icon">✓</div>
+      <div>
+        <strong>Asiento Registrado</strong>
+        <p>{{ success.mensaje }} (Ref. Contable #{{ success.id_registro }})</p>
+      </div>
+    </div>
   } @else {
     @if (isAutoApproved()) {
-      <div class="auto-approved-actions">
-        <p class="hint-text">El documento cumple todas las normas aritméticas y fiscales.</p>
-        <button 
-          vf-button 
-          variant="primary" 
-          [isLoading]="isSubmitting()"
-          (click)="onDirectApprove()">
-          Confirmar e Ingestar en ERP
-        </button>
+        <div class="decision-content">
+        <div class="decision-info">
+          <div class="decision-badge success">Dictamen: Aprobado</div>
+          <h4>Resolución Contable</h4>
+          <p>El documento satisface íntegramente las normas aritméticas, tipos de IVA vigentes y políticas corporativas de gasto.</p>
+        </div>
+        
+        <div class="decision-actions">
+          <button 
+            vf-button 
+            variant="primary" 
+            [isLoading]="isSubmitting()"
+            (click)="onDirectApprove()">
+            Confirmar e Ingestar en ERP
+          </button>
+        </div>
       </div>
     }
-
     @if (!isAutoApproved()) {
-      <div class="flagged-actions">
-        
+      <div class="decision-content flagged">
+        <div class="decision-info">
+          <div class="decision-badge warning">Dictamen: Requiere Revisión</div>
+          <h4>Resolución Contable</h4>
+          <p>Se han identificado discrepancias. Seleccione la resolución del departamento para la pista de auditoría:</p>
+        </div>
         @if (!selectedAction()) {
-          <p class="hint-text">Se han detectado discrepancias. Selecciona la acción del departamento:</p>
-          <div class="action-buttons-group">
-            <button 
-              vf-button 
-              variant="danger" 
-              (click)="onSelectAction('RECHAZADO')">
+          <div class="decision-actions-group">
+            <button vf-button variant="secondary" (click)="onSelectAction('RECHAZADO')">
               Rechazar Gasto
             </button>
-            <button 
-              vf-button 
-              variant="secondary" 
-              (click)="onSelectAction('APROBADO_CON_EXCEPCION')">
-              Aprobar con Excepción
+            <button vf-button variant="primary" (click)="onSelectAction('APROBADO_CON_EXCEPCION')">
+              Aprobar con Justificación
             </button>
           </div>
         } @else {
-          <div class="comment-form">
-            <label class="comment-label">
-              {{ selectedAction() === 'RECHAZADO' ? 'Motivo del rechazo (para notificar al empleado):' : 'Justificación de la excepción aprobada:' }}
+          <div class="comment-panel">
+            <label>
+              {{ selectedAction() === 'RECHAZADO' ? 'Motivo del rechazo (se notificará al empleado):' : 'Justificación de la excepción contable (LGT):' }}
             </label>
-            
             <textarea 
-              class="comment-textarea"
               rows="3" 
-              [(ngModel)]="comment"
-              placeholder="Introduce una nota para la pista de auditoría...">
+              [(ngModel)]="comment" 
+              placeholder="Indique la justificación para el libro diario...">
             </textarea>
-
-            <div class="form-actions">
+            <div class="panel-buttons">
               <button vf-button variant="secondary" (click)="onCancelAction()" [disabled]="isSubmitting()">
                 Cancelar
               </button>
               <button 
                 vf-button 
-                [variant]="selectedAction() === 'RECHAZADO' ? 'danger' : 'primary'"
+                variant="primary"
                 [isLoading]="isSubmitting()"
                 (click)="onConfirmAction()">
                 Confirmar {{ selectedAction() === 'RECHAZADO' ? 'Rechazo' : 'Aprobación' }}
@@ -67,9 +67,7 @@
             </div>
           </div>
         }
-
       </div>
     }
-
   }
 </article>
