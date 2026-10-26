@@ -1,3 +1,14 @@
+@if (errorMessage(); as errorMsg) {
+  <div class="error-banner-container">
+    <vf-alert variant="danger">
+      <div class="error-alert-content">
+        <strong>Error en la auditoría</strong>
+        <p>{{ errorMsg }}</p>
+      </div>
+    </vf-alert>
+  </div>
+}
+
 @if (isLoading()) {
 <article vf-card class="loading-pipeline-card">
 

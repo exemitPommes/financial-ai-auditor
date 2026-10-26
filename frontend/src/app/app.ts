@@ -79,7 +79,19 @@ export class AppComponent {
         },
         error: (error) => {
           console.error('Error al auditar:', error)
-          this.auditErrorMessage.set('Error al conectar con el servidor de auditoría.');
+          if (error.status === 429 || (error.status === 500 && error.error?.detail?.includes('429'))) {
+            this.auditErrorMessage.set(
+              'El motor de IA está saturado temporalmente por exceso de peticiones. Por favor, espere 10 segundos y vuelva a pulsar "Auditar Documento".'
+            );
+          } else if (error.status === 413) {
+            this.auditErrorMessage.set('El documento supera el tamaño máximo permitido de 10 MB.');
+          } else if (error.status === 415) {
+            this.auditErrorMessage.set('El formato del documento no es compatible. Utilice PDF, PNG o JPG.');
+          } else {
+            this.auditErrorMessage.set(
+              'No se pudo completar la auditoría. Compruebe que el servidor esté activo e inténtelo de nuevo.'
+            );
+          }
           this.isLoading.set(false);
         }
       });
