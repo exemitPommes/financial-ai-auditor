@@ -1,0 +1,12 @@
+# backend/.dockerignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env
+.git
+.gitignore
+.DS_Store
+tests/fixtures
+auditorias.db
